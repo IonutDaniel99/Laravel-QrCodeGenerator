@@ -7,13 +7,12 @@ use Illuminate\Support\Facades\DB;
 use App\QrCodeCore;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Storage;
-use Illuminate\Filesystem\Filesystem;
 
 class DataBaseController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware(['auth' => 'verified']);
     }
     public function index()
     {
@@ -48,7 +47,7 @@ class DataBaseController extends Controller
     public function delete_all()
     {
         DB::table('qrcode')->delete();
-        $files =   Storage::allFiles('QrCodes');
+        $files =Storage::allFiles('QrCodes');
         Storage::delete($files);
         return back();
     }

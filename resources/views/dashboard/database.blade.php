@@ -11,9 +11,9 @@
   <!--     Fonts and icons     -->
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
   <!-- CSS Files -->
   <link href="css/material-dashboard.css?v=2.1.1" rel="stylesheet" />
   <!-- CSS Just for demo purpose, don't include it in your project -->
@@ -22,7 +22,7 @@
 
 <body class="">
   <div class="wrapper ">
-    <div class="sidebar" data-color="green" data-background-color="white" data-image="img/sidebar-1.jpg">
+    <div class="sidebar" data-color="green" data-background-color="black" data-image="img/sidebar-1.jpg">
       <div class="logo">
         <a class="simple-text logo-normal">
           Panel
@@ -48,12 +48,14 @@
               <p>DataBase</p>
             </a>
           </li>
+          @if(auth()->user()->roles =="owner")
           <li class="nav-item ">
-            <a class="nav-link" href="./typography.html">
-              <i class="material-icons">library_books</i>
-              <p>Others</p>
+            <a class="nav-link" href="{{ route('users.index') }}">
+              <i class="material-icons">person</i>
+              <p>User DataBase</p>
             </a>
           </li>
+          @endif
         </ul>
       </div>
     </div>
@@ -80,9 +82,6 @@
                   </p>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
-                  <a class="dropdown-item" href="#">Profile</a>
-                  <a class="dropdown-item" href="#">Settings</a>
-                  <div class="dropdown-divider"></div>
                   <a class="dropdown-item" href="{{ url('/logout') }}">Log out</a>
                 </div>
               </li>
@@ -128,7 +127,7 @@
                     </td>
                     <td>{{ $qrcode->sent_at }}</td>
                     <td>
-                      @if($qrcode->used === 1)
+                      @if($qrcode->used === 0)
                       <b>
                         Yes
                       </b>
@@ -141,24 +140,26 @@
                     <td>{{ $qrcode->used_at }}</td>
                     <td>
                       <!--<a href='database/edit/{{$qrcode->id}}' class="material-icons">send</a>-->
-                    @if($qrcode->sent == 0)
-                        {{ csrf_field() }}
-                        <a href='database/update/{{ $qrcode->id }}' method="POST" class="material-icons" name="changeStatus" value="No">check</a>
+                      @if($qrcode->sent == 0)
+                      {{ csrf_field() }}
+                      <a href='database/update/{{ $qrcode->id }}' method="POST" class="material-icons" name="changeStatus" value="No">check</a>
                       @else
                       <a href='database/update/{{ $qrcode->id }}' method="POST" class="material-icons" name="changeStatus" value="Yes">close</a>
-                    @endif
-                    <a href='#' class="material-icons" target="popup" onclick="window.open('database/view/{{$qrcode->codes}}','name','width=280,height=310')">remove_red_eye</a>
-                    <a href='database/download/{{$qrcode->codes}}' class="material-icons">cloud_download</a>
-                    <a href='database/delete/{{ $qrcode->id }}' class="material-icons">delete</a>
-
-
+                      @endif
+                      <a href='#' class="material-icons" target="popup" onclick="window.open('database/view/{{$qrcode->codes}}','name','width=280,height=310')">remove_red_eye</a>
+                      <a href='database/download/{{$qrcode->codes}}' class="material-icons">cloud_download</a>
+                      @if(auth()->user()->roles =="owner" ||auth()->user()->roles =="admin")
+                      <a href='database/delete/{{ $qrcode->id }}' class="material-icons">delete</a>
+                      @endif
                     </td>
                   </tr>
                   @endforeach
                   {{$QrCodePagination -> links()}}
                 </tbody>
               </table>
+              @if(auth()->user()->roles =="owner" ||auth()->user()->roles =="admin")
               <a class="btn btn-danger" href="{{ url('/database/delete_all') }}">Delete All</a>
+              @endif
             </div>
           </div>
         </div>
@@ -208,6 +209,7 @@
   <script src="js/material-dashboard.js?v=2.1.1" type="text/javascript"></script>
   <!-- Material Dashboard DEMO methods, don't include it in your project! -->
   <script src="demo/demo.js"></script>
+
 </body>
 
 

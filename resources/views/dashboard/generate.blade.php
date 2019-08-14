@@ -1,24 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8" />
   <link rel="apple-touch-icon" sizes="76x76" href="img/apple-icon.png">
   <link rel="icon" type="image/png" href="img/favicon.png">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
   <title>Generate</title>
+  <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
   <!--     Fonts and icons     -->
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
   <!-- CSS Files -->
   <link href="css/material-dashboard.css?v=2.1.1" rel="stylesheet" />
+  <!-- CSS Just for demo purpose, don't include it in your project -->
+  <link href="demo/demo.css" rel="stylesheet" />
 </head>
 
 <body class="">
   <div class="wrapper ">
-    <div class="sidebar" data-color="purple" data-background-color="white" data-image="img/sidebar-1.jpg">
+    <div class="sidebar" data-color="purple" data-background-color="black" data-image="img/sidebar-1.jpg">
       <div class="logo">
         <a class="simple-text logo-normal">
           Panel
@@ -44,12 +47,14 @@
               <p>DataBase</p>
             </a>
           </li>
+          @if(auth()->user()->roles =="owner")
           <li class="nav-item ">
-            <a class="nav-link" href="./typography.html">
-              <i class="material-icons">library_books</i>
-              <p>Others</p>
+            <a class="nav-link" href="{{ route('users.index') }}">
+              <i class="material-icons">person</i>
+              <p>User DataBase</p>
             </a>
           </li>
+          @endif
         </ul>
       </div>
     </div>
@@ -76,9 +81,6 @@
                   </p>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
-                  <a class="dropdown-item" href="#">Profile</a>
-                  <a class="dropdown-item" href="#">Settings</a>
-                  <div class="dropdown-divider"></div>
                   <a class="dropdown-item" href="{{ url('/logout') }}">Log out</a>
                 </div>
               </li>
@@ -127,7 +129,7 @@
                               <i class="state-icon glyphicon glyphicon-check"></i>
                               <i class="material-icons">
                                 check
-                              </i> 
+                              </i>
                               <input type="checkbox" class="invisible" style="position: absolute;" name="CheckBoxValue" checked>
                             </button>
                           </span>
@@ -243,75 +245,76 @@
   <script src="js/plugins/bootstrap-notify.js"></script>
   <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="js/material-dashboard.js?v=2.1.1" type="text/javascript"></script>
+  
+  <script>
+    $(function() {
+      $('.button-checkbox').each(function() {
+
+        // Settings
+        var $widget = $(this),
+          $button = $widget.find('button'),
+          $checkbox = $widget.find('input:checkbox'),
+          color = $button.data('color'),
+          settings = {
+            on: {
+              icon: 'glyphicon glyphicon-check'
+            },
+            off: {
+              icon: 'glyphicon glyphicon-unchecked'
+            }
+          };
+
+        // Event Handlers
+        $button.on('click', function() {
+          $checkbox.prop('checked', !$checkbox.is(':checked'));
+          $checkbox.triggerHandler('change');
+          updateDisplay();
+        });
+        $checkbox.on('change', function() {
+          updateDisplay();
+        });
+
+        // Actions
+        function updateDisplay() {
+          var isChecked = $checkbox.is(':checked');
+
+          // Set the button's state
+          $button.data('state', (isChecked) ? "on" : "off");
+
+          // Set the button's icon
+          $button.find('.state-icon')
+            .removeClass()
+            .addClass('state-icon ' + settings[$button.data('state')].icon);
+
+          // Update the button's color
+          if (isChecked) {
+            $button
+              .removeClass('btn-default')
+              .addClass('btn-' + color + ' active');
+          } else {
+            $button
+              .removeClass('btn-' + color + ' active')
+              .addClass('btn-default');
+          }
+        }
+
+        // Initialization
+        function init() {
+
+          updateDisplay();
+
+          // Inject the icon if applicable
+          if ($button.find('.state-icon').length == 0) {
+            $button.prepend('<i class="state-icon ' + settings[$button.data('state')].icon + '"></i> ');
+          }
+        }
+        init();
+      });
+    });
+  </script>
 
 
 </body>
 
-<script>
-  $(function() {
-    $('.button-checkbox').each(function() {
-
-      // Settings
-      var $widget = $(this),
-        $button = $widget.find('button'),
-        $checkbox = $widget.find('input:checkbox'),
-        color = $button.data('color'),
-        settings = {
-          on: {
-            icon: 'glyphicon glyphicon-check'
-          },
-          off: {
-            icon: 'glyphicon glyphicon-unchecked'
-          }
-        };
-
-      // Event Handlers
-      $button.on('click', function() {
-        $checkbox.prop('checked', !$checkbox.is(':checked'));
-        $checkbox.triggerHandler('change');
-        updateDisplay();
-      });
-      $checkbox.on('change', function() {
-        updateDisplay();
-      });
-
-      // Actions
-      function updateDisplay() {
-        var isChecked = $checkbox.is(':checked');
-
-        // Set the button's state
-        $button.data('state', (isChecked) ? "on" : "off");
-
-        // Set the button's icon
-        $button.find('.state-icon')
-          .removeClass()
-          .addClass('state-icon ' + settings[$button.data('state')].icon);
-
-        // Update the button's color
-        if (isChecked) {
-          $button
-            .removeClass('btn-default')
-            .addClass('btn-' + color + ' active');
-        } else {
-          $button
-            .removeClass('btn-' + color + ' active')
-            .addClass('btn-default');
-        }
-      }
-
-      // Initialization
-      function init() {
-
-        updateDisplay();
-
-        // Inject the icon if applicable
-        if ($button.find('.state-icon').length == 0) {
-          $button.prepend('<i class="state-icon ' + settings[$button.data('state')].icon + '"></i> ');
-        }
-      }
-      init();
-    });
-  });
-</script>
 
 </html>

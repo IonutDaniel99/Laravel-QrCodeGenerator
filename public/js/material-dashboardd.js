@@ -28,6 +28,23 @@
     }
 })();
 
+isWindows = -1 < navigator.platform.indexOf("Win"), isWindows ? ($(".sidebar .sidebar-wrapper, .main-panel").perfectScrollbar(), $("html").addClass("perfect-scrollbar-on")) : $("html").addClass("perfect-scrollbar-off");
+var breakCards = !0,
+    searchVisible = 0,
+    transparent = !0,
+    transparentDemo = !0,
+    fixedTop = !1,
+    mobile_menu_visible = 0,
+    mobile_menu_initialized = !1,
+    toggle_initialized = !1,
+    bootstrap_nav_initialized = !1,
+    seq = 0,
+    delays = 80,
+    durations = 500,
+    seq2 = 0,
+    delays2 = 80,
+    durations2 = 500;
+
 
 var breakCards = true;
 
@@ -134,7 +151,61 @@ $(document).on('click', '.navbar-toggler', function () {
     }
 
 });
-
+$(document).ready(function () {
+    $sidebar = $(".sidebar"), window_width = $(window).width(), $("body").bootstrapMaterialDesign({
+        autofill: !1
+    }), md.initSidebarsCheck(), window_width = $(window).width(), md.checkSidebarImage(), md.initMinimizeSidebar(), $(".dropdown-menu a.dropdown-toggle").on("click", function (e) {
+        var a = $(this),
+            t = $(this).offsetParent(".dropdown-menu");
+        return $(this).next().hasClass("show") || $(this).parents(".dropdown-menu").first().find(".show").removeClass("show"), $(this).next(".dropdown-menu").toggleClass("show"), $(this).closest("a").toggleClass("open"), $(this).parents("a.dropdown-item.dropdown.show").on("hidden.bs.dropdown", function (e) {
+            $(".dropdown-menu .show").removeClass("show")
+        }), t.parent().hasClass("navbar-nav") || a.next().css({
+            top: a[0].offsetTop,
+            left: t.outerWidth() - 4
+        }), !1
+    }), 0 != $(".selectpicker").length && $(".selectpicker").selectpicker(), $('[rel="tooltip"]').tooltip(), $('[data-toggle="popover"]').popover();
+    var e = $(".tagsinput").data("color");
+    0 != $(".tagsinput").length && $(".tagsinput").tagsinput(), $(".bootstrap-tagsinput").addClass(e + "-badge"), $(".select").dropdown({
+        dropdownClass: "dropdown-menu",
+        optionClass: ""
+    }), $(".form-control").on("focus", function () {
+        $(this).parent(".input-group").addClass("input-group-focus")
+    }).on("blur", function () {
+        $(this).parent(".input-group").removeClass("input-group-focus")
+    }), 1 == breakCards && $('[data-header-animation="true"]').each(function () {
+        $(this);
+        var a = $(this).parent(".card");
+        a.find(".fix-broken-card").click(function () {
+            console.log(this);
+            var e = $(this).parent().parent().siblings(".card-header, .card-header-image");
+            e.removeClass("hinge").addClass("fadeInDown"), a.attr("data-count", 0), setTimeout(function () {
+                e.removeClass("fadeInDown animate")
+            }, 480)
+        }), a.mouseenter(function () {
+            var e = $(this);
+            hover_count = parseInt(e.attr("data-count"), 10) + 1 || 0, e.attr("data-count", hover_count), 20 <= hover_count && $(this).children(".card-header, .card-header-image").addClass("hinge animated")
+        })
+    }), $('input[type="checkbox"][required="true"], input[type="radio"][required="true"]').on("click", function () {
+        $(this).hasClass("error") && $(this).closest("div").removeClass("has-error")
+    })
+}), $(document).on("click", ".navbar-toggler", function () {
+    if ($toggle = $(this), 1 == mobile_menu_visible) $("html").removeClass("nav-open"), $(".close-layer").remove(), setTimeout(function () {
+        $toggle.removeClass("toggled")
+    }, 400), mobile_menu_visible = 0;
+    else {
+        setTimeout(function () {
+            $toggle.addClass("toggled")
+        }, 430);
+        var e = $('<div class="close-layer"></div>');
+        0 != $("body").find(".main-panel").length ? e.appendTo(".main-panel") : $("body").hasClass("off-canvas-sidebar") && e.appendTo(".wrapper-full-page"), setTimeout(function () {
+            e.addClass("visible")
+        }, 100), e.click(function () {
+            $("html").removeClass("nav-open"), mobile_menu_visible = 0, e.removeClass("visible"), setTimeout(function () {
+                e.remove(), $toggle.removeClass("toggled")
+            }, 400)
+        }), $("html").addClass("nav-open"), mobile_menu_visible = 1
+    }
+});
 // activate collapse right menu when the windows is resized
 $(window).resize(function () {
     md.initSidebarsCheck();
@@ -182,39 +253,6 @@ md = {
             }
         });
     },
-
-    initDocumentationCharts: function () {
-        if ($('#dailySalesChart').length != 0 && $('#websiteViewsChart').length != 0) {
-            /* ----------==========     Daily Sales Chart initialization For Documentation    ==========---------- */
-
-            dataDailySalesChart = {
-                labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
-                series: [
-                    [12, 17, 7, 17, 23, 18, 38]
-                ]
-            };
-
-            optionsDailySalesChart = {
-                lineSmooth: Chartist.Interpolation.cardinal({
-                    tension: 0
-                }),
-                low: 0,
-                high: 50, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
-                chartPadding: {
-                    top: 0,
-                    right: 0,
-                    bottom: 0,
-                    left: 0
-                },
-            }
-
-            var dailySalesChart = new Chartist.Line('#dailySalesChart', dataDailySalesChart, optionsDailySalesChart);
-
-            var animationHeaderChart = new Chartist.Line('#websiteViewsChart', dataDailySalesChart, optionsDailySalesChart);
-        }
-    },
-
-
     initFormExtendedDatetimepickers: function () {
         $('.datetimepicker').datetimepicker({
             icons: {
@@ -309,9 +347,11 @@ md = {
 
     initDashboardPageCharts: function () {
 
+
+
         if ($('#dailySalesChart').length != 0 || $('#completedTasksChart').length != 0 || $('#websiteViewsChart').length != 0) {
             /* ----------==========     Daily Sales Chart initialization    ==========---------- */
-            fetch('/dashboard/FirstChartJson').then(function (response) {
+            fetch('/dashboard/refresh').then(function (response) {
                 return response.json()
             }).then(function (json) {
                 var JsonLenght = Object.keys(json).length;
@@ -344,7 +384,7 @@ md = {
                         tension: 0
                     }),
                     low: 1,
-                    high: 100, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+                    high: 50, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
                     chartPadding: {
                         top: 0,
                         right: 0,
@@ -357,46 +397,36 @@ md = {
                 md.startAnimationForLineChart(dailySalesChart);
             });
 
+
+
             /* ----------==========     Completed Tasks Chart initialization    ==========---------- */
-            fetch('/dashboard/ThirdChartJson').then(function (response) {
-                return response.json()
-            }).then(function (json) {
-                console.log(json);
-                dataCompletedTasksChart = {
-                    labels: ['12a', '3a', '6a', '9a', '12p', '3p', '6p', '9p'],
-                    series: [
-                        [
-                            json[0],
-                            json[1],
-                            json[2],
-                            json[3],
-                            json[4],
-                            json[5],
-                            json[6],
-                            json[7],
-                        ]
-                    ]
-                };
 
-                optionsCompletedTasksChart = {
-                    lineSmooth: Chartist.Interpolation.cardinal({
-                        tension: 0
-                    }),
-                    low: 0,
-                    high: 25, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
-                    chartPadding: {
-                        top: 0,
-                        right: 0,
-                        bottom: 0,
-                        left: 0
-                    }
+            dataCompletedTasksChart = {
+                labels: ['12p', '3p', '6p', '9p', '12p', '3a', '6a', '9a'],
+                series: [
+                    [230, 750, 450, 300, 280, 240, 200, 190]
+                ]
+            };
+
+            optionsCompletedTasksChart = {
+                lineSmooth: Chartist.Interpolation.cardinal({
+                    tension: 0
+                }),
+                low: 0,
+                high: 1000, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+                chartPadding: {
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    left: 0
                 }
+            }
 
-                var completedTasksChart = new Chartist.Line('#completedTasksChart', dataCompletedTasksChart, optionsCompletedTasksChart);
+            var completedTasksChart = new Chartist.Line('#completedTasksChart', dataCompletedTasksChart, optionsCompletedTasksChart);
 
-                // start animation for the Completed Tasks Chart - Line Chart
-                md.startAnimationForLineChart(completedTasksChart);
-            });
+            // start animation for the Completed Tasks Chart - Line Chart
+            md.startAnimationForLineChart(completedTasksChart);
+
 
             /* ----------==========     Emails Subscription Chart initialization    ==========---------- */
 

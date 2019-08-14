@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-
 class Codedb extends Migration
 {
     /**
@@ -22,6 +21,12 @@ class Codedb extends Migration
             $table->boolean("used")->default(0);
             $table->timestamp("used_at")->nullable();
         });
+
+        Schema::create('TicketPrice', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->float('price')->default(0);;
+        });
+
     }
 
     /**
